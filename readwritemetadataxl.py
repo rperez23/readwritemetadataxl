@@ -12,26 +12,38 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 
 numeps   = 205
 
-xlinf    = 'TPIR Drew Database.xlsx'
-xlintab  = 'TPIR Drew'
-
 startrow           = 6
 innbuzzridcol      = 5
 innairdatecol      = 6
 inncontestantscol  = 10
 
 #open the input xl file, exit if it fails
+xlinf    = 'TPIR Drew Database.xlsx'
+xlintab  = 'TPIR Drew'
 try:
     workbook = openpyxl.load_workbook(filename=xlinf,data_only=True)
 except:
     print("  Cannot open",xlinf)
     sys.exit(0)
-
 if not (xlintab in workbook.sheetnames):
     print(" ",xlintab,"not in",xlinf)
     workbook.close()
-
 ws = workbook[xlintab]
+
+
+
+#open the output xl file, exit if it fails
+xloutf   = 'zMetadata_TPIR_DREW_2023.xlsx'
+xlouttab = '1. Master Metadata'
+try:
+    wb2 = openpyxl.load_workbook(filename=xloutf,data_only=True)
+except:
+    print("  Cannot open",xloutf)
+    sys.exit(0)
+if not (xlouttab in wb2.sheetnames):
+    print(" ",xlouttab,"not in",xloutf)
+    wb2.close()
+ws2 = workbook[xlintab]
 
 for i in range(0,numeps):
 
@@ -63,6 +75,8 @@ for i in range(0,numeps):
 	print(season,':',buzzrid,':',mov,':',airdate)
 
 workbook.close()
+wb2.close()
+
 sys.exit(0)
 
 
