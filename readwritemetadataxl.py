@@ -46,10 +46,21 @@ for i in range(0,numeps):
 	season = parts[2].replace('SR00','')
 	mov    = 'ThePriceIsRight_s' + season + '_e' + epnum + '_20230410.mov'
 
+	m = re.search('^\d+/\d+/\d+',airdate)
 
+	if m:
+		parts   = airdate.split(' ')
+		airdate = parts[0]
+		parts   = airdate.split('/')
+		mo      = parts[0].zfill(2)
+		dy      = parts[1].zfill(2)
+		yr      = str(int(parts[2]) + 2000)
+		airdate = yr + '-' + mo + '-' + dy
+	else:
+		parts = airdate.split(' ')
+		airdate = parts[0] 
 
-
-	print(buzzrid,':',mov,':',airdate)
+	print(season,':',buzzrid,':',mov,':',airdate)
 
 workbook.close()
 sys.exit(0)
