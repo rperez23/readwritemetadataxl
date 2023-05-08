@@ -19,7 +19,7 @@ innbuzzridcol      = 5
 innairdatecol      = 6
 inncontestantscol  = 10
 
-#open the input xl file, exit if it fails
+#open the input xl file, exit if it fails (The Database xl sheet)
 xlinf    = 'TPIR Drew Database.xlsx'
 xlintab  = 'TPIR Drew'
 try:
@@ -49,21 +49,30 @@ ws2 = wb2[xlouttab]
 
 font = Font(name='Verdana',size=10)
 
+
+#read  through the 'TPIR Drew Database' starting at row 6
+#write to the      'zMetadata_TPIR_DREW_2023.xlsx' 
 for i in range(0,numeps):
 
-	row = startrow + i
+	row = startrow + i    
 
-	buzzrid = str(ws.cell(row,innbuzzridcol).value)
-	airdate = str(ws.cell(row,innairdatecol).value)
+	buzzrid = str(ws.cell(row,innbuzzridcol).value)   #get the buzzrid
+	airdate = str(ws.cell(row,innairdatecol).value)   #get the airdate 
 
-	parts = buzzrid.split('_')
+	#split up buzzr id to get episode num, season
+	#current name format of buzzrid: TPIR_EP4841_SR0038_YR2009_DC
+	parts = buzzrid.split('_')                        
 
 	epnum  = parts[1].replace('EP','')
 	season = parts[2].replace('SR00','')
+
+	#set the movie name to ThePriceIsRight_s38_e4841_20230410.mov
+	# TPIR_EP4841_SR0038_YR2009_DC -> ThePriceIsRight_s38_e4841_20230410.mov
 	mov    = 'ThePriceIsRight_s' + season + '_e' + epnum + '_20230410.mov'
 
 	m = re.search('^\d+/\d+/\d+',airdate)
 
+	#set the airdate to YYYY-DY-MO
 	if m:
 		parts   = airdate.split(' ')
 		airdate = parts[0]
@@ -77,6 +86,8 @@ for i in range(0,numeps):
 		airdate = parts[0] 
 
 	#print(season,':',buzzrid,':',mov,':',airdate)
+
+	#write the data to the output xl file -> 
 
 	ws2.cell(row=row,column=2).value  = mov
 	ws2.cell(row=row,column=2).font = font
@@ -126,11 +137,6 @@ for i in range(0,numeps):
 
 	ws2.cell(row=row,column=32).value = buzzrid
 	ws2.cell(row=row,column=32).font = font
-
-
-
-
-
 
 wb2.save(xloutf)
 wb2.close()
