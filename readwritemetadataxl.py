@@ -181,7 +181,9 @@ for i in range(0,numeps):
 		ws2.cell(row=row,column=27).value = capprefix
 		ws2.cell(row=row,column=27).font = font
 
-
+		if housenum != 'None':
+			ws2.cell(row=row,column=31).value = housenum
+			ws2.cell(row=row,column=31).font = font
 
 wb2.save(xloutf)
 wb2.close()
