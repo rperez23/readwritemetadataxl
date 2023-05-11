@@ -15,9 +15,27 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 numeps   = 205
 
 startrow           = 6
+innhncol           = 4
 innbuzzridcol      = 5
 innairdatecol      = 6
 inncontestantscol  = 10
+
+
+
+
+#######Ask the user if these are masters or fc ready#######
+
+print('')
+assettype = input('What type of media (fast or master): ')
+#print(assettype)
+
+if (assettype != 'fast') and (assettype != 'master'):
+	print('   ~~~wrong option~~~')
+
+#sys.exit(0)
+
+###########################################################
+
 
 #open the input xl file, exit if it fails (The Database xl sheet)
 xlinf    = 'TPIR Drew Database.xlsx'
@@ -56,8 +74,14 @@ for i in range(0,numeps):
 
 	row = startrow + i    
 
-	buzzrid = str(ws.cell(row,innbuzzridcol).value)   #get the buzzrid
-	airdate = str(ws.cell(row,innairdatecol).value)   #get the airdate 
+	housenum    = str(ws.cell(row,innhncol).value)           #get the housenum
+	buzzrid     = str(ws.cell(row,innbuzzridcol).value)      #get the buzzrid
+	airdate     = str(ws.cell(row,innairdatecol).value)      #get the airdate 
+	
+	contestants = str(ws.cell(row,inncontestantscol).value)  #get contestants
+	contestants = contestants.replace(',',';')
+	contestants = contestants.replace(',',';')
+
 
 	#split up buzzr id to get episode num, season
 	#current name format of buzzrid: TPIR_EP4841_SR0038_YR2009_DC
@@ -69,6 +93,15 @@ for i in range(0,numeps):
 	#set the movie name to ThePriceIsRight_s38_e4841_20230410.mov
 	# TPIR_EP4841_SR0038_YR2009_DC -> ThePriceIsRight_s38_e4841_20230410.mov
 	mov    = 'ThePriceIsRight_s' + season + '_e' + epnum + '_20230410.mov'
+
+	#if we have a fast channel
+	if assettype == 'fast':
+		mov = mov.replace('.mov','.mxf')
+		programversion = 'On-line Platform'
+		capprefix = mov.split('.')[0] #caption prefix
+	else:
+		programversion = 'International'
+
 
 	m = re.search('^\d+/\d+/\d+',airdate)
 
@@ -129,7 +162,7 @@ for i in range(0,numeps):
 	ws2.cell(row=row,column=16).value = "Drew Carey"
 	ws2.cell(row=row,column=16).font = font
 
-	ws2.cell(row=row,column=24).value = "International"
+	ws2.cell(row=row,column=24).value = programversion
 	ws2.cell(row=row,column=24).font = font
 
 	ws2.cell(row=row,column=25).value = "Color"
@@ -137,6 +170,18 @@ for i in range(0,numeps):
 
 	ws2.cell(row=row,column=32).value = buzzrid
 	ws2.cell(row=row,column=32).font = font
+
+	#Add the contestants (both cases)
+	if contestants != 'None':
+		ws2.cell(row=row,column=21).value = contestants 
+		ws2.cell(row=row,column=21).font = font
+
+	#Add the caption prefix
+	if assettype == 'fast':
+		ws2.cell(row=row,column=27).value = capprefix
+		ws2.cell(row=row,column=27).font = font
+
+
 
 wb2.save(xloutf)
 wb2.close()
