@@ -147,10 +147,10 @@ for i in range(0,numeps):
 	ws2.cell(row=row,column=9).font = font
 
 	
-	ws2.cell(row=row,column=10).value = season
+	ws2.cell(row=row,column=10).value = int(season)
 	ws2.cell(row=row,column=10).font = font
 
-	ws2.cell(row=row,column=11).value = epnum
+	ws2.cell(row=row,column=11).value = int(epnum)
 	ws2.cell(row=row,column=11).font = font
 
 	ws2.cell(row=row,column=13).value = "Non-scripted"
