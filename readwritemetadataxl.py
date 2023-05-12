@@ -19,6 +19,7 @@ innhncol           = 4
 innbuzzridcol      = 5
 innairdatecol      = 6
 inncontestantscol  = 10
+deleterow          = 0
 
 
 
@@ -77,6 +78,13 @@ for i in range(0,numeps):
 	housenum    = str(ws.cell(row,innhncol).value)           #get the housenum
 	buzzrid     = str(ws.cell(row,innbuzzridcol).value)      #get the buzzrid
 	airdate     = str(ws.cell(row,innairdatecol).value)      #get the airdate 
+
+	
+
+	#print('')
+	#print('   ',buzzrid)
+	if buzzrid == 'TPIR_EP5082_SR0038_YR2010_DC':
+		deleterow = row
 	
 	contestants = str(ws.cell(row,inncontestantscol).value)  #get contestants
 	contestants = contestants.replace(',',';')
@@ -185,9 +193,20 @@ for i in range(0,numeps):
 			ws2.cell(row=row,column=31).value = housenum
 			ws2.cell(row=row,column=31).font = font
 
+#close the source work book
+workbook.close()
+
+#Read through xl file ws2 (delete unwanted rows)
+#first get list of buzzzrids to delete
+#buzzridlist = ['TPIR_EP5082_SR0038_YR2010_DC']
+print('')
+print('Delete Row :',deleterow)
+print('')
+
+ws2.delete_rows(deleterow,1)
+
 wb2.save(xloutf)
 wb2.close()
-workbook.close()
 
 sys.exit(0)
 
