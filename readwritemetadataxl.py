@@ -21,19 +21,23 @@ innairdatecol      = 6
 inncontestantscol  = 10
 deleterow          = 0
 
-
+list38 = []
+list39 = [128]    #start with row 128 since it will be deleted
 
 
 #######Ask the user if these are masters or fc ready#######
 
 print('')
-assettype = input('What type of media (fast or master): ')
+assettype  = input('What type of media (fast or master): ')
+seasonkeep = int(input('What season is this(38   or     39): '))
 #print(assettype)
 
-if (assettype != 'fast') and (assettype != 'master'):
-	print('   ~~~wrong option~~~')
-
-#sys.exit(0)
+if (assettype != 'fast') and (assettype != 'master'): 
+	print('   ~~~wrong asset~~~')
+	sys.exit(0)
+if (seasonkeep != 38) and (seasonkeep != 39):
+	print('   ~~~wrong season~~~')
+	sys.exit(0)
 
 ###########################################################
 
@@ -89,6 +93,7 @@ for i in range(0,numeps):
 	contestants = str(ws.cell(row,inncontestantscol).value)  #get contestants
 	contestants = contestants.replace(',',';')
 	contestants = contestants.replace(',',';')
+	contestants = contestants.replace('&','and')
 
 
 	#split up buzzr id to get episode num, season
@@ -97,6 +102,12 @@ for i in range(0,numeps):
 
 	epnum  = parts[1].replace('EP','')
 	season = parts[2].replace('SR00','')
+
+	#get the row number for each season and add to list
+	if int(season) == 38:
+		list38.append(row)
+	else:
+		list39.append(row)
 
 	#set the movie name to ThePriceIsRight_s38_e4841_20230410.mov
 	# TPIR_EP4841_SR0038_YR2009_DC -> ThePriceIsRight_s38_e4841_20230410.mov
@@ -199,15 +210,23 @@ workbook.close()
 #Read through xl file ws2 (delete unwanted rows)
 #first get list of buzzzrids to delete
 #buzzridlist = ['TPIR_EP5082_SR0038_YR2010_DC']
-print('')
-print('Delete Row :',deleterow)
-print('')
 
-ws2.delete_rows(deleterow,1)
+
+if seasonkeep == 38:
+	list39.reverse()
+	deletelist = list39
+
+else:
+	list38.reverse()
+	deletelist = list38
+
+for delrow in deletelist:
+	print('delete : ',delrow)
+	ws2.delete_rows(delrow,1)
+
 
 wb2.save(xloutf)
 wb2.close()
-
 sys.exit(0)
 
 
