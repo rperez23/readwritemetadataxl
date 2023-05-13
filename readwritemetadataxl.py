@@ -14,6 +14,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 
 numeps   = 205
 
+fnamecol           = 2
 startrow           = 6
 innhncol           = 4
 innbuzzridcol      = 5
@@ -204,6 +205,7 @@ for i in range(0,numeps):
 			ws2.cell(row=row,column=31).value = housenum
 			ws2.cell(row=row,column=31).font = font
 
+
 #close the source work book
 workbook.close()
 
@@ -215,14 +217,55 @@ workbook.close()
 if seasonkeep == 38:
 	list39.reverse()
 	deletelist = list39
+	sr = 194
 
 else:
 	list38.reverse()
 	deletelist = list38
+	#sr = 
 
 for delrow in deletelist:
-	print('delete : ',delrow)
+	#print('delete : ',delrow)
 	ws2.delete_rows(delrow,1)
+
+
+if assettype == 'fast':
+
+	#lscmd = 'aws s3 ls "s3://s3-fremantle-uk-or-1/fremantleuk/DMS UK/Media Files/T/ThePriceIsRight/Season38/FAST/"'
+	#status = subprocess.run(lscmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True).stdout.strip("\n")
+	#parts = status.split('\n')
+
+	awscmd = 'aws s3 ls "s3://s3-fremantle-uk-or-1/fremantleuk/DMS UK/Media Files/T/ThePriceIsRight/Season' + str(seasonkeep) + '/FAST/"'
+	#print(awscmd)
+	status = subprocess.run(awscmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True).stdout.strip("\n")
+	parts = status.split('\n')
+	#print(parts)
+
+	mxflist = []
+
+	for txt in parts:
+		#2023-05-12 21:25:58 8035836140 ThePriceIsRight_s38_e5095_20230410.mxf
+
+		m = re.search('\s+(ThePriceIsRight_s\d+_e\d+_\d+\.mxf)',txt)
+		if m:
+			#print(m.group(1))
+			mxflist.append(m.group(1))
+
+	#print(mxflist)
+
+	for rownum in range(194,5,-1):
+
+		episodename = str(ws2.cell(rownum,fnamecol).value)
+
+		if not (episodename in mxflist):
+			ws2.delete_rows(rownum,1)
+		else:
+			capprefix = str(ws2.cell(row=rownum,column=27).value)
+			housenum  = str(ws2.cell(row=rownum,column=31).value)
+
+
+			lncmd = 'ln ' + capprefix + '.scc ' + housenum + '.scc'
+			print(lncmd)
 
 
 wb2.save(xloutf)
